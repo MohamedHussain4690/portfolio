@@ -11,9 +11,12 @@ export const metadata: Metadata = {
     "Portfolio lab of Mohamed Hussain N. AI agents, RAG systems and full-stack products. I ship systems that think.",
   metadataBase: new URL("https://mohamedhussain.dev"),
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: [
+      { url: "/icon.png?v=2" },
+      { url: "/favicon.ico?v=2" },
+    ],
+    shortcut: "/icon.png?v=2",
+    apple: "/icon.png?v=2",
   },
   openGraph: {
     title: "MOHAMED HUSSAIN N — AI + Full Stack Developer",

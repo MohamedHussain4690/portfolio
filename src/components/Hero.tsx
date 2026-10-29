@@ -13,12 +13,6 @@ export function Hero() {
   return (
     <section id="home" data-canvas="dark" className="relative min-h-screen flex flex-col justify-between px-6 md:px-12 pt-32 pb-12 overflow-hidden bg-[var(--bg)] border-b border-[var(--border)]">
       {/* Corner Markers */}
-      <div className="absolute top-6 left-6 font-mono text-[11px] text-[var(--muted)] select-none">
-        01_HOME
-      </div>
-      <div className="absolute top-6 right-6 font-mono text-[11px] text-[var(--muted)] select-none">
-        CHENNAI_IN
-      </div>
       <div className="absolute bottom-6 left-6 font-mono text-[11px] text-[var(--muted)] select-none">
         13.0827° N, 80.2707° E
       </div>

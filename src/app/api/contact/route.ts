@@ -1,24 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
-// Configure your email service here
-// Using Gmail as an example - you can change to any SMTP service
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
+function getTransporter() {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    throw new Error('Email credentials are not configured');
+  }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
     const { name, email, message } = await request.json();
 
     // Validation
-    if (!name || !email || !message) {
+    if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    if (name.length > 100 || message.length > 5000) {
+      return NextResponse.json(
+        { error: 'Input too long' },
         { status: 400 }
       );
     }
@@ -35,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Email to you
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'mhhussain4690@gmail.com', // Your email
+      to: process.env.EMAIL_USER,
       subject: `New Contact Form Submission from ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -62,6 +72,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Send email
+    const transporter = getTransporter();
     await transporter.sendMail(mailOptions);
 
     // Optional: Send confirmation email to the user

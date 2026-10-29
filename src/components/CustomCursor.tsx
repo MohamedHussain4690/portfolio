@@ -1,48 +1,80 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
+  const [isLight, setIsLight] = useState(false);
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
   const ringX = useSpring(x, { stiffness: 400, damping: 35, mass: 0.6 });
   const ringY = useSpring(y, { stiffness: 400, damping: 35, mass: 0.6 });
+  const lastPosRef = useRef({ x: -100, y: -100 });
+
+  const checkCanvasTheme = useCallback((target: HTMLElement | null) => {
+    if (!target || typeof target.closest !== 'function') return false;
+    return Boolean(
+      target.closest(
+        '[data-canvas="light"], #about, #open-to-work, #certifications, #faq, .bg-\\[\\#F4F4F4\\], .bg-white'
+      )
+    );
+  }, []);
+
+  const checkClickable = useCallback((target: HTMLElement | null) => {
+    if (!target || typeof target.closest !== 'function') return false;
+    return Boolean(
+      target.closest(
+        'a, button, input, textarea, .cursor-pointer, [role="button"], [data-cursor="pointer"]'
+      )
+    );
+  }, []);
 
   useEffect(() => {
-    const move = (e: MouseEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-    };
-    
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName.toLowerCase() === 'a' ||
-        target.tagName.toLowerCase() === 'button' ||
-        target.closest('a') ||
-        target.closest('button') ||
-        target.tagName.toLowerCase() === 'input' ||
-        target.tagName.toLowerCase() === 'textarea' ||
-        target.classList.contains('cursor-pointer') ||
-        window.getComputedStyle(target).cursor === 'pointer'
-      ) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
+    const handleMove = (e: MouseEvent) => {
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      x.set(clientX);
+      y.set(clientY);
+      lastPosRef.current = { x: clientX, y: clientY };
+
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        setIsLight(checkCanvasTheme(target));
+        setIsHovering(checkClickable(target));
       }
     };
 
-    window.addEventListener('mousemove', move, { passive: true });
-    window.addEventListener('mouseover', handleMouseOver);
-    
-    return () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseover', handleMouseOver);
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        setIsLight(checkCanvasTheme(target));
+        setIsHovering(checkClickable(target));
+      }
     };
-  }, [x, y]);
+
+    const handleScroll = () => {
+      const { x: px, y: py } = lastPosRef.current;
+      if (px > 0 && py > 0) {
+        const el = document.elementFromPoint(px, py) as HTMLElement | null;
+        if (el) {
+          setIsLight(checkCanvasTheme(el));
+          setIsHovering(checkClickable(el));
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [x, y, checkCanvasTheme, checkClickable]);
 
   // Hide on touch devices
   useEffect(() => {
@@ -52,13 +84,20 @@ export function CustomCursor() {
   }, []);
 
   return (
-    <div className="hidden md:block max-md:hidden [@media(pointer:coarse)]:hidden">
+    <div className="hidden md:block max-md:hidden [@media(pointer:coarse)]:hidden pointer-events-none">
       <motion.div
-        className="custom-cursor-dot"
+        className={cn(
+          'custom-cursor-dot pointer-events-none',
+          isLight ? 'cursor-light' : 'cursor-dark'
+        )}
         style={{ x, y, translateX: '-50%', translateY: '-50%' }}
       />
       <motion.div
-        className={cn('custom-cursor', isHovering && 'expanded')}
+        className={cn(
+          'custom-cursor pointer-events-none',
+          isLight ? 'cursor-light' : 'cursor-dark',
+          isHovering && 'expanded'
+        )}
         style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
       />
     </div>

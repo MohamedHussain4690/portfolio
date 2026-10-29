@@ -1,287 +1,138 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
-
-const codeLines = [
-  'const developer = {',
-  "  name: 'MOHAMED',",
-  "  role: 'AI + FULL STACK',",
-  "  building: 'AI Products',",
-  "  stack: ['Next.js', 'Python', 'LangChain'],",
-  "  status: 'Shipping systems that think',",
-  '};',
-  '',
-  'await deploy(developer);',
-];
+import { ArrowDownRight } from 'lucide-react';
+import { portfolioData } from '@/data/portfolio';
 
 export function Hero() {
   const { scrollY } = useScroll();
-  const yTransform = useTransform(scrollY, [0, 800], [0, -150]);
-  const opacityTransform = useTransform(scrollY, [0, 400], [1, 0]);
+  const yTransform = useTransform(scrollY, [0, 800], [0, -120]);
+  const opacityTransform = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-between px-8 md:px-16 lg:pl-24 lg:pr-16 pt-28 md:pt-24 pb-8 overflow-hidden">
-      {/* Left Side - Kinetic Typography (60%) */}
-      <div className="relative w-full md:w-[60%] flex flex-col justify-center z-10">
-        <div className="mb-8">
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--muted)]">
-            001 / HERO — PORTFOLIO &copy;2026
-          </span>
-        </div>
+    <section id="home" data-canvas="dark" className="relative min-h-screen flex flex-col justify-between px-6 md:px-12 pt-32 pb-12 overflow-hidden bg-[var(--bg)] border-b border-[var(--border)]">
+      {/* Corner Markers */}
+      <div className="absolute top-6 left-6 font-mono text-[11px] text-[var(--muted)] select-none">
+        01_HOME
+      </div>
+      <div className="absolute top-6 right-6 font-mono text-[11px] text-[var(--muted)] select-none">
+        CHENNAI_IN
+      </div>
+      <div className="absolute bottom-6 left-6 font-mono text-[11px] text-[var(--muted)] select-none">
+        13.0827° N, 80.2707° E
+      </div>
+      <div className="absolute bottom-6 right-6 font-mono text-[11px] text-[var(--muted)] select-none">
+        MHN_2026
+      </div>
 
-        <motion.div style={{ y: yTransform }} className="relative group">
-          {/* Status badges */}
+      {/* Main Kinetic Content Grid */}
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto relative z-10">
+
+        {/* Left Column: Massive Kinetic Typography & Role */}
+        <div className="lg:col-span-8 flex flex-col justify-center">
           <motion.div
-            className="flex flex-wrap items-center gap-3 mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 90,
-              damping: 16,
-              delay: 0.1,
-            }}
+            transition={{ duration: 0.6 }}
           >
-            <span className="font-mono text-[10px] uppercase tracking-widest px-3 py-1.5 border border-[var(--accent-lime)]/40 text-[var(--accent-lime)] bg-[var(--accent-lime)]/5">
-              AVAILABLE FOR HIRE
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-widest px-3 py-1.5 border border-[var(--border)] text-[var(--muted)]">
-              CHENNAI, IN
-            </span>
+            <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-widest text-[#9C502F] mb-4">
+              <span className="w-2 h-2 rounded-full bg-[#9C502F] animate-pulse" />
+              <span>FINAL-YEAR CSE &middot; AI + FULL-STACK BUILDER</span>
+            </div>
+
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-extrabold uppercase tracking-tight text-[var(--foreground)] leading-[0.95]">
+              MOHAMED <br />
+              <span className="text-[#9C502F]">HUSSAIN</span>
+            </h1>
+
+            <p className="mt-6 text-base sm:text-lg text-[var(--muted)] font-mono max-w-2xl leading-relaxed">
+              Architecting production-grade MERN web applications, transit ticketing engines, and transformer-based NLP and multimodal RAG pipelines with uncompromising Swiss editorial precision.
+            </p>
           </motion.div>
 
-          <motion.h1
-            className="text-[13vw] md:text-[6.5vw] lg:text-[5.5vw] leading-[0.95] font-extrabold uppercase tracking-tight text-[var(--fg)]"
-            initial={{ opacity: 0, y: 30 }}
+          {/* Action CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 90,
-              damping: 16,
-              delay: 0.2,
-            }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-10 flex flex-wrap items-center gap-4"
           >
-            MOHAMED
-            <br />
-            HUSSAIN N
-          </motion.h1>
+            <a
+              href="#projects"
+              className="group flex items-center gap-3 pl-6 pr-2 py-3 bg-[var(--foreground)] text-[var(--bg)] hover:bg-[#9C502F] hover:text-white rounded-full text-xs font-mono uppercase tracking-widest transition-colors shadow-lg"
+            >
+              <span>EXPLORE WORKS</span>
+              <span className="w-8 h-8 rounded-full bg-[var(--bg)] text-[var(--foreground)] group-hover:bg-white group-hover:text-[#9C502F] flex items-center justify-center transition-colors">
+                <ArrowDownRight className="w-4 h-4" />
+              </span>
+            </a>
 
-          {/* Role subtitle - eye-catching */}
-          <motion.p
-            className="mt-8 text-2xl md:text-3xl font-bold uppercase tracking-wider text-[var(--accent-lime)] relative inline-block"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 90,
-              damping: 16,
-              delay: 0.4,
-            }}
+            <a
+              href="#contact"
+              className="px-6 py-3 border border-[var(--border)] hover:border-[#9C502F] text-[var(--foreground)] rounded-full text-xs font-mono uppercase tracking-widest transition-colors"
+            >
+              CONTACT ME/
+            </a>
+          </motion.div>
+        </div>
+
+        {/* Right Column: Rotating Dotted Tick-Mark Ring & Portrait / Emblem Apparatus */}
+        <div className="lg:col-span-4 flex items-center justify-center relative py-12 z-10">
+          {/* Rotating Dotted Ring */}
+          <div className="absolute w-80 h-80 sm:w-96 sm:h-96 lg:w-[420px] lg:h-[420px] rounded-full border border-dashed border-[#5E625F]/40 animate-[spin_40s_linear_infinite] pointer-events-none z-0" />
+          <div className="absolute w-72 h-72 sm:w-84 sm:h-84 lg:w-[360px] lg:h-[360px] rounded-full border border-[var(--border)] pointer-events-none z-0" />
+
+          {/* Center Portrait / Graphic Frame */}
+          <motion.div
+            style={{ y: yTransform }}
+            className="w-72 h-72 sm:w-80 sm:h-80 lg:w-[340px] lg:h-[340px] rounded-full bg-[#1A1A1A] border-2 border-[var(--border)] p-2.5 shadow-2xl relative overflow-hidden flex items-center justify-center group z-10"
           >
-            <span className="relative z-10">AI + FULL STACK DEVELOPER</span>
-            {/* Glow effect */}
-            <motion.span
-              className="absolute inset-0 blur-xl bg-[var(--accent-lime)] opacity-20"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </motion.p>
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#9C502F]/20 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
 
-          {/* hover distortion wash */}
-          <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[var(--accent-lime)]/5 via-transparent to-[var(--accent-ice)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            />
-          </div>
-        </motion.div>
-
-        <motion.div
-          style={{ opacity: opacityTransform }}
-          className="mt-12 flex items-center gap-4"
-        >
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--muted)]">
-            SCROLL TO EXPLORE LAB
-          </span>
-          <div className="relative w-12 h-4 flex items-center overflow-hidden">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-px bg-[var(--border)]" />
-            <motion.div
-              className="w-2 h-2 rounded-full bg-[var(--accent-lime)]"
-              animate={{ x: [0, 40, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </div>
-          <span className="font-mono text-xs text-[var(--accent-lime)]">(001)</span>
-        </motion.div>
-      </div>
-
-      {/* Right Side - Profile Image + Code Window (40%) */}
-      <div className="w-full md:w-[38%] flex flex-col items-center justify-center z-10 mt-12 md:mt-0 gap-8">
-        {/* Circular Profile Image with decorative rings */}
-        <motion.div
-          className="relative w-80 h-80"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            type: 'spring',
-            stiffness: 90,
-            damping: 16,
-            delay: 0.4,
-          }}
-        >
-          {/* Animated decorative rings */}
-          <motion.div
-            className="absolute inset-0 rounded-full border border-[var(--accent-lime)]/20"
-            animate={{
-              scale: [1, 1.05, 1],
-              borderColor: ['rgba(217, 255, 0, 0.2)', 'rgba(232, 240, 254, 0.3)', 'rgba(217, 255, 0, 0.2)']
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute inset-[-8px] rounded-full border border-[var(--accent-ice)]/10"
-            animate={{
-              scale: [1, 1.03, 1],
-              rotate: [0, 180, 360]
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          />
-          <motion.div
-            className="absolute inset-[-16px] rounded-full border border-[var(--accent-lime)]/5"
-            animate={{
-              scale: [1, 1.02, 1],
-              rotate: [0, -90, -180]
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-          />
-
-          {/* Main profile image circle */}
-          <div className="absolute inset-0 rounded-full overflow-hidden border-4 border-[var(--accent-lime)]/40 shadow-2xl">
-            <Image
-              src="/profile.png"
-              alt="Mohamed Hussain N"
-              fill
-              className="object-cover"
-              sizes="320px"
-              priority
-            />
-          </div>
-
-          {/* Subtle glow effect */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[var(--accent-lime)]/20 via-transparent to-[var(--accent-ice)]/20 blur-2xl -z-10" />
-        </motion.div>
-
-        {/* Compact Code Window */}
-        <motion.div
-          className="w-full max-w-sm"
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6, duration: 0.8, ease: 'easeOut' }}
-        >
-          <div className="bg-[var(--card)] border border-[var(--border)] overflow-hidden relative shadow-2xl rounded-xl">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[#0a0a0b]">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              </div>
-              <div className="ml-4 font-mono text-xs text-[var(--muted)] px-3 py-1 bg-[var(--bg)] border border-[var(--border)]">
-                developer.ts — live
-              </div>
-              <div className="ml-auto flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-lime)] animate-pulse" />
-                <span className="font-mono text-[10px] text-[var(--muted)]">TYPING</span>
-              </div>
+            <div className="w-full h-full rounded-full overflow-hidden relative border border-white/10 flex items-center justify-center bg-[#111] z-10">
+              <Image
+                src={portfolioData.personal.avatar || "/profile.png"}
+                alt="Mohamed Hussain N"
+                fill
+                sizes="(max-width: 768px) 320px, 360px"
+                className="object-cover object-top grayscale-[20%] contrast-[105%] brightness-[95%] group-hover:grayscale-0 transition-all duration-700 scale-105"
+                priority
+                loading="eager"
+              />
+              <div className="absolute inset-0 bg-[#9C502F]/10 mix-blend-overlay pointer-events-none z-20" />
             </div>
 
-            <div className="p-5 font-mono text-[12px] leading-relaxed overflow-x-auto min-h-[220px]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-              <CodeTypingAnimation lines={codeLines} />
+            {/* Floating badge */}
+            <div className="absolute bottom-4 px-3.5 py-1.5 bg-black/85 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-mono text-[#ECECEC] uppercase tracking-wider z-30 shadow-lg">
+              ONLINE // 2026
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
+
+      {/* Bottom Ticker / Stats Bar */}
+      <motion.div
+        style={{ opacity: opacityTransform }}
+        className="max-w-7xl mx-auto w-full pt-8 border-t border-[var(--border)] grid grid-cols-2 md:grid-cols-4 gap-6 font-mono text-xs text-[var(--muted)] uppercase tracking-wider"
+      >
+        <div>
+          <span className="text-[var(--foreground)] font-bold block text-sm">04+</span>
+          PRODUCTION PROJECTS
+        </div>
+        <div>
+          <span className="text-[var(--foreground)] font-bold block text-sm">MERN + AI</span>
+          FULL-STACK ARCHITECTURE
+        </div>
+        <div>
+          <span className="text-[var(--foreground)] font-bold block text-sm">CHENNAI</span>
+          AVAILABLE FOR HIRE
+        </div>
+        <div>
+          <span className="text-[var(--foreground)] font-bold block text-sm">SWISS EDITORIAL</span>
+          DESIGN SYSTEM
+        </div>
+      </motion.div>
     </section>
   );
-}
-
-function CodeTypingAnimation({ lines }: { lines: string[] }) {
-  return (
-    <div className="min-h-[200px]">
-      {lines.map((line, lineIndex) => (
-        <TypingLine key={lineIndex} line={line} lineIndex={lineIndex} delay={0.4 + lineIndex * 0.35} />
-      ))}
-    </div>
-  );
-}
-
-function TypingLine({ line, lineIndex, delay }: { line: string; lineIndex: number; delay: number }) {
-  const [displayText, setDisplayText] = useState('');
-  const [started, setStarted] = useState(false);
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setStarted(true), delay * 1000);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  useEffect(() => {
-    if (!started) return;
-    if (line.length === 0) {
-      setDone(true);
-      return;
-    }
-    let i = 0;
-    const typeInterval = setInterval(() => {
-      i++;
-      setDisplayText(line.slice(0, i));
-      if (i >= line.length) {
-        clearInterval(typeInterval);
-        setDone(true);
-      }
-    }, 24);
-    return () => clearInterval(typeInterval);
-  }, [started, line]);
-
-  const indent = line.match(/^\s*/)?.[0].length || 0;
-
-  return (
-    <div className="flex items-baseline gap-2" style={{ paddingLeft: `${indent * 8}px` }}>
-      <span className="text-[#3f3f46] text-[11px] shrink-0 w-6 text-right select-none">
-        {String(lineIndex + 1).padStart(2, '0')}
-      </span>
-      <span className="whitespace-pre text-[var(--fg)]">
-        <ColoredCode text={displayText} started={started} />
-        {started && !done && (
-          <motion.span
-            className="ml-0.5 text-[var(--accent-lime)]"
-            animate={{ opacity: [1, 0, 1] }}
-            transition={{ duration: 0.8, repeat: Infinity }}
-          >
-            ▍
-          </motion.span>
-        )}
-      </span>
-    </div>
-  );
-}
-
-function ColoredCode({ text, started }: { text: string; started: boolean }) {
-  if (!started) return null;
-  // minimal syntax tint: keywords lime, strings ice
-  if (text.includes("'")) {
-    const parts = text.split("'");
-    return (
-      <>
-        <span className="text-zinc-400">{parts[0]}</span>
-        <span className="text-[var(--accent-ice)]">
-          &apos;{parts.slice(1).join('&apos;')}
-        </span>
-      </>
-    );
-  }
-  if (text.includes('const') || text.includes('await') || text.includes('deploy')) {
-    return <span className="text-[var(--accent-lime)]">{text}</span>;
-  }
-  return <span className="text-zinc-300">{text}</span>;
 }

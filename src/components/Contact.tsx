@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { LineReveal } from './TextReveal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { portfolioData } from '@/data/portfolio';
+import { ArrowUpRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 
 export function Contact() {
-  const [formState, setFormState] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,171 +18,239 @@ export function Contact() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(formState),
+        body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
 
       if (response.ok) {
         setStatus('success');
-        setFormState({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', message: '' });
       } else {
-        alert(data.error || 'Failed to send message. Please try again.');
-        setStatus('idle');
+        const data = await response.json();
+        throw new Error(data?.error || 'Failed to dispatch transmission.');
       }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      alert('Failed to send message. Please try again later.');
-      setStatus('idle');
+    } catch {
+      setStatus('error');
     }
   };
 
+  const handleMailtoFallback = () => {
+    const subject = encodeURIComponent(`Portfolio Inquiry from ${formData.name || 'Visitor'}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    window.location.href = `mailto:${portfolioData.personal.email}?subject=${subject}&body=${body}`;
+  };
+
   return (
-    <section className="relative py-8 md:py-12 px-8 md:px-16 lg:px-24 overflow-hidden border-t border-[var(--border)]">
+    <section id="contact" data-canvas="dark" className="relative py-24 md:py-32 px-6 md:px-12 bg-[#0A0A0A] text-[#ECECEC] overflow-hidden border-b border-[var(--border)]">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-          
-          {/* Left: Giant Heading & Direct Contact */}
-          <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--muted)] block mb-6">
-              006 / CONTACT
-            </span>
-            
-            <LineReveal
-              as="h2"
-              stagger={0.08}
-              className="text-5xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-tight leading-[0.95]"
-            >
-              LET&apos;S
-              <br />
-              <span className="text-[var(--accent-lime)]">BUILD.</span>
-            </LineReveal>
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.1 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <span className="font-mono text-xs uppercase tracking-widest text-[#808185]">
+            09 / CONTACT/
+          </span>
+          <h2 className="mt-3 text-3xl md:text-5xl font-extrabold uppercase tracking-tight text-[#ECECEC]">
+            LET&apos;S BUILD <span className="text-[#9C502F]">TOGETHER</span>
+          </h2>
+        </motion.div>
 
-            <motion.p
-              className="mt-8 text-lg text-[var(--muted)] leading-relaxed max-w-md"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              Have a project in mind, an AI system to scale, or want to collaborate? 
-              Reach out directly or drop a transmission through the terminal.
-            </motion.p>
+        {/* Asymmetric 2-Column Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
-            <motion.div
-              className="mt-8 space-y-4 font-mono text-sm"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-[var(--accent-lime)]">&gt;</span>
-                <span className="text-[var(--muted)]">EMAIL:</span>
-                <a href="mailto:mhhussain4690@gmail.com" className="text-[var(--fg)] hover:text-[var(--accent-lime)] transition-colors underline decoration-[var(--accent-lime)]/50 underline-offset-4">
-                  mhhussain4690@gmail.com
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-[var(--accent-lime)]">&gt;</span>
-                <span className="text-[var(--muted)]">GITHUB:</span>
-                <a href="https://github.com/MohamedHussain4690" target="_blank" rel="noopener noreferrer" className="text-[var(--fg)] hover:text-[var(--accent-lime)] transition-colors underline decoration-[var(--accent-lime)]/50 underline-offset-4">
-                  github.com/MohamedHussain4690
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-[var(--accent-lime)]">&gt;</span>
-                <span className="text-[var(--muted)]">LINKEDIN:</span>
-                <a href="https://www.linkedin.com/in/mohamed-hussain-n-" target="_blank" rel="noopener noreferrer" className="text-[var(--fg)] hover:text-[var(--accent-ice)] transition-colors underline decoration-[var(--accent-ice)]/50 underline-offset-4">
-                  linkedin.com/in/mohamed-hussain-n-
-                </a>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right: Terminal Contact Form */}
+          {/* Left Column — Direct Communication Channels (Col span 5) */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-[var(--card)] border border-[var(--border)] relative"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 space-y-8"
           >
-            {/* Terminal header */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[var(--border)] bg-[var(--bg)]">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              </div>
-              <div className="ml-4 font-mono text-xs text-[var(--muted)] px-3 py-1 bg-[var(--bg)] border border-[var(--border)] rounded">
-                transmission.sh
-              </div>
+            <div>
+              <h3 className="text-4xl md:text-6xl font-extrabold uppercase tracking-tight text-[#ECECEC] leading-[0.95] mb-6">
+                READY TO <br />
+                <span className="text-[#9C502F]">DISPATCH.</span>
+              </h3>
+              <p className="text-sm md:text-base text-[#B6B6B6] font-mono leading-relaxed">
+                Whether you are hiring full-time engineering talent, looking for an AI application builder, or initiating a complex MERN architecture project, my inbox is open.
+              </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6 font-mono">
+            {/* Channel Directory */}
+            <div className="space-y-4 pt-6 border-t border-[var(--border)] font-mono text-xs md:text-sm">
+              <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">
+                <span className="text-[#808185] uppercase">EMAIL/</span>
+                <a
+                  href={`mailto:${portfolioData.personal.email}`}
+                  className="text-[#ECECEC] group-hover:text-[#9C502F] font-bold underline transition-colors"
+                >
+                  {portfolioData.personal.email}
+                </a>
+              </div>
+
+              <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">
+                <span className="text-[#808185] uppercase">GITHUB/</span>
+                <a
+                  href={portfolioData.personal.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#ECECEC] group-hover:text-[#9C502F] font-bold underline flex items-center gap-1 transition-colors"
+                >
+                  MohamedHussain4690 ↗
+                </a>
+              </div>
+
+              <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">
+                <span className="text-[#808185] uppercase">LINKEDIN/</span>
+                <a
+                  href={portfolioData.personal.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#ECECEC] group-hover:text-[#9C502F] font-bold underline flex items-center gap-1 transition-colors"
+                >
+                  mohamed-hussain-n- ↗
+                </a>
+              </div>
+
+              <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">
+                <span className="text-[#808185] uppercase">LOCATION/</span>
+                <span className="text-[#ECECEC] font-bold">
+                  {portfolioData.personal.location} - GLOBAL REMOTE
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column — Brutalist Form Architecture (Col span 7) */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-7 bg-[#141414] border border-[var(--border)] p-8 md:p-10 relative shadow-2xl"
+          >
+            <div className="flex items-center justify-between font-mono text-xs text-[#808185] uppercase tracking-widest mb-8 border-b border-[var(--border)] pb-4">
+              <span>TRANSMISSION PORTAL</span>
+              <span className="text-[#ECECEC]">SECURE HTTPS</span>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6 font-mono">
+              {/* Field 1: Name */}
               <div>
-                <label className="block text-xs uppercase tracking-wider text-[var(--muted)] mb-2">
-                  <span className="text-[var(--accent-lime)] mr-2">&gt;</span>ENTER_NAME
+                <label className="block text-xs uppercase tracking-wider text-[#808185] mb-2">
+                  01 // SENDER_NAME
                 </label>
                 <input
                   type="text"
                   required
-                  value={formState.name}
-                  onChange={e => setFormState({ ...formState, name: e.target.value })}
-                  className="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-[var(--fg)] rounded-none focus:outline-none focus:border-[var(--accent-lime)] transition-colors text-sm"
-                  placeholder="John Doe"
+                  disabled={status === 'submitting'}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="YOUR NAME / COMPANY"
+                  className="w-full bg-[#1A1A1A] border border-[#5E625F]/30 focus:border-[#ECECEC] outline-none text-[#ECECEC] font-mono text-sm px-4 py-3.5 rounded-none transition-colors disabled:opacity-50"
                 />
               </div>
 
+              {/* Field 2: Email */}
               <div>
-                <label className="block text-xs uppercase tracking-wider text-[var(--muted)] mb-2">
-                  <span className="text-[var(--accent-lime)] mr-2">&gt;</span>ENTER_EMAIL
+                <label className="block text-xs uppercase tracking-wider text-[#808185] mb-2">
+                  02 // EMAIL_COORDINATE
                 </label>
                 <input
                   type="email"
                   required
-                  value={formState.email}
-                  onChange={e => setFormState({ ...formState, email: e.target.value })}
-                  className="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-[var(--fg)] rounded-none focus:outline-none focus:border-[var(--accent-lime)] transition-colors text-sm"
-                  placeholder="john@example.com"
+                  disabled={status === 'submitting'}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="YOUR EMAIL ADDRESS"
+                  className="w-full bg-[#1A1A1A] border border-[#5E625F]/30 focus:border-[#ECECEC] outline-none text-[#ECECEC] font-mono text-sm px-4 py-3.5 rounded-none transition-colors disabled:opacity-50"
                 />
               </div>
 
+              {/* Field 3: Message */}
               <div>
-                <label className="block text-xs uppercase tracking-wider text-[var(--muted)] mb-2">
-                  <span className="text-[var(--accent-lime)] mr-2">&gt;</span>ENTER_TRANSMISSION_MESSAGE
+                <label className="block text-xs uppercase tracking-wider text-[#808185] mb-2">
+                  03 // DISPATCH_BRIEF
                 </label>
                 <textarea
                   required
                   rows={4}
-                  value={formState.message}
-                  onChange={e => setFormState({ ...formState, message: e.target.value })}
-                  className="w-full bg-[var(--bg)] border border-[var(--border)] px-4 py-3 text-[var(--fg)] rounded-none focus:outline-none focus:border-[var(--accent-lime)] transition-colors text-sm resize-none"
-                  placeholder="Let's discuss an AI project..."
+                  disabled={status === 'submitting'}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="DESCRIBE THE PROJECT, ROLE, OR TIMELINE"
+                  className="w-full bg-[#1A1A1A] border border-[#5E625F]/30 focus:border-[#ECECEC] outline-none text-[#ECECEC] font-mono text-sm px-4 py-3.5 rounded-none transition-colors resize-none disabled:opacity-50"
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={status === 'submitting' || status === 'success'}
-                className="w-full bg-[var(--accent-lime)] text-[var(--bg)] font-bold uppercase tracking-wider py-4 rounded-none hover:bg-[#B8DB00] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer text-sm"
-              >
-                {status === 'submitting' && 'TRANSMITTING...'}
-                {status === 'success' && 'TRANSMISSION RECEIVED ✓'}
-                {status === 'idle' && 'EXECUTE TRANSMISSION →'}
-              </button>
-
-              {status === 'success' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-4 bg-[var(--accent-lime)]/10 border border-[var(--accent-lime)] text-[var(--accent-lime)] text-xs text-center"
+              {/* Submit Action */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={status === 'submitting'}
+                  className="group w-full flex items-center justify-between px-6 py-4 bg-[#ECECEC] hover:bg-white text-[#0A0A0A] font-mono text-xs uppercase tracking-widest transition-colors cursor-pointer disabled:opacity-50 shadow-lg"
                 >
-                  SUCCESS: Message dispatched to Mohamed Hussain N. Expect response shortly.
-                </motion.div>
-              )}
+                  <span className="font-bold">
+                    {status === 'submitting' ? 'TRANSMITTING BRIEF...' : 'DISPATCH MESSAGE /'}
+                  </span>
+                  <span className="w-10 h-10 rounded-full bg-[#0A0A0A] group-hover:bg-[#9C502F] text-white flex items-center justify-center transition-colors">
+                    {status === 'submitting' ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    ) : (
+                      <ArrowUpRight className="w-4 h-4" />
+                    )}
+                  </span>
+                </button>
+              </div>
+
+              {/* Success / Feedback State */}
+              <AnimatePresence>
+                {status === 'success' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-4 bg-[#141414] border border-[#9C502F] text-xs text-[#ECECEC] flex items-center gap-3"
+                  >
+                    <CheckCircle2 className="w-5 h-5 text-[#9C502F] shrink-0" />
+                    <div>
+                      <span className="font-bold text-[#9C502F] block">MESSAGE TRANSMITTED.</span>
+                      <span className="text-[#808185]">I WILL RESPOND WITHIN 24 HOURS.</span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {status === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-4 bg-[#141414] border border-red-500/50 text-xs text-[#ECECEC] flex flex-col gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+                      <div>
+                        <span className="font-bold text-red-400 block">TRANSMISSION ATTEMPT FAILED.</span>
+                        <span className="text-[#808185]">Server credentials may be unconfigured. Dispatch directly via email:</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleMailtoFallback}
+                      className="px-4 py-2 bg-red-950/40 border border-red-500/40 hover:bg-red-900/40 text-red-200 text-[11px] uppercase tracking-wider font-mono self-start cursor-pointer transition-colors"
+                    >
+                      OPEN DEFAULT EMAIL CLIENT ↗
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </form>
           </motion.div>
 

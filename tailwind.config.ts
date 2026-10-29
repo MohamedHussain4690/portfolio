@@ -12,6 +12,10 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        sans: ['"Inter Tight"', 'Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+      },
     },
   },
   plugins: [],

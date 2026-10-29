@@ -1,31 +1,25 @@
 import { Hero } from "@/components/Hero";
 import { About } from "@/components/About";
 import { Projects } from "@/components/Projects";
-import { Stack } from "@/components/Stack";
-import { Philosophy } from "@/components/Philosophy";
+import { Skills } from "@/components/Skills";
+import { Journey } from "@/components/Journey";
+import { OpenToWork } from "@/components/OpenToWork";
+import { Certifications } from "@/components/Certifications";
+import { FAQ } from "@/components/FAQ";
 import { Contact } from "@/components/Contact";
 
 export default function Home() {
   return (
     <>
-      <div id="hero">
-        <Hero />
-      </div>
-      <div id="about">
-        <About />
-      </div>
-      <div id="work">
-        <Projects />
-      </div>
-      <div id="stack">
-        <Stack />
-      </div>
-      <div id="philosophy">
-        <Philosophy />
-      </div>
-      <div id="contact">
-        <Contact />
-      </div>
+      <Hero />
+      <About />
+      <Projects />
+      <Skills />
+      <Journey />
+      <OpenToWork />
+      <Certifications />
+      <FAQ />
+      <Contact />
     </>
   );
 }

@@ -14,10 +14,9 @@
   <a href="#-overview">Overview</a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#%EF%B8%8F-tech-stack">Tech Stack</a> •
-  <a href="#-architecture">Architecture</a> •
+  <a href="#-architecture--directory-structure">Architecture</a> •
   <a href="#-getting-started">Getting Started</a> •
-  <a href="#-deployment">Deployment</a> •
-  <a href="#-connect">Connect</a>
+  <a href="#-author">Author</a>
 </p>
 
 </div>
@@ -148,17 +147,6 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
-
----
-
-## 🌐 Deployment to Vercel
-
-The portfolio is pre-configured for zero-friction deployment on **Vercel**:
-
-1. Push this repository to GitHub.
-2. Import the project into the [Vercel Dashboard](https://vercel.com/new).
-3. Under **Settings → Environment Variables**, add your `EMAIL_USER` and `EMAIL_PASSWORD`.
-4. Hit **Deploy**. Any future commits pushed to the `main` branch will automatically trigger instant CI/CD builds with zero downtime.
 
 ---
 

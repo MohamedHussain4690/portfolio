@@ -273,7 +273,7 @@ export const portfolioData = {
       id: 'f6',
       number: '06/',
       question: 'HOW CAN HIRING TEAMS REACH YOU QUICKLY?',
-      answer: 'You can reach me directly via email at mohamedhussain4690@gmail.com, connect on GitHub, or send a message using the interactive contact form below.',
+      answer: 'You can reach me directly via email at mhhussain4690@gmail.com, connect on GitHub, or send a message using the interactive contact form below.',
     },
   ] as FaqItem[],
 };

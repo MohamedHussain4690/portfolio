@@ -1,9 +1,29 @@
 'use client';
 
+import { useState } from 'react';
 import { portfolioData } from '@/data/portfolio';
-import { ArrowUpRight, ArrowUp } from 'lucide-react';
+import { ArrowUpRight, ArrowUp, Copy, Check } from 'lucide-react';
 
 export function Footer() {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await navigator.clipboard.writeText(portfolioData.personal.email);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = portfolioData.personal.email;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    }
+  };
   return (
     <footer data-canvas="dark" className="bg-[var(--bg)] border-t border-[var(--border)] pt-20 pb-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -53,12 +73,37 @@ export function Footer() {
             <h4 className="font-mono text-[11px] text-[var(--muted)] uppercase tracking-widest">RESOURCES</h4>
             <ul className="space-y-2.5">
               <li>
-                <a
-                  href={`mailto:${portfolioData.personal.email}`}
-                  className="font-mono text-xs text-[var(--fg)] hover:text-[var(--accent)] transition-colors uppercase"
-                >
-                  DIRECT EMAIL
-                </a>
+                <div className="flex items-center justify-between gap-2">
+                  <a
+                    href={`mailto:${portfolioData.personal.email}`}
+                    className="font-mono text-xs text-[var(--fg)] hover:text-[var(--accent)] transition-colors uppercase"
+                  >
+                    DIRECT EMAIL
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className={`px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border transition-all flex items-center gap-1 active:scale-95 cursor-pointer select-none ${
+                      copiedEmail
+                        ? 'border-[var(--accent)] bg-[var(--accent)]/20 text-[var(--fg)]'
+                        : 'border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--accent)]'
+                    }`}
+                    title="Copy email to clipboard"
+                    aria-label="Copy email address"
+                  >
+                    {copiedEmail ? (
+                      <>
+                        <Check className="w-2.5 h-2.5 text-[var(--accent)]" />
+                        <span>COPIED ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-2.5 h-2.5 opacity-60" />
+                        <span>COPY</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </li>
               <li>
                 <a

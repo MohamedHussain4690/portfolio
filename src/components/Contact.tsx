@@ -3,11 +3,31 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { portfolioData } from '@/data/portfolio';
-import { ArrowUpRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, Loader2, AlertCircle, Copy, Check } from 'lucide-react';
 
 export function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(portfolioData.personal.email);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = portfolioData.personal.email;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,14 +105,54 @@ export function Contact() {
 
             {/* Channel Directory */}
             <div className="space-y-4 pt-6 border-t border-[var(--border)] font-mono text-xs md:text-sm">
-              <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">
+              <div className="relative p-4 bg-[#141414] border border-[var(--border)] flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 group hover:border-[#9C502F] transition-colors">
                 <span className="text-[#808185] uppercase">EMAIL/</span>
-                <a
-                  href={`mailto:${portfolioData.personal.email}`}
-                  className="text-[#ECECEC] group-hover:text-[#9C502F] font-bold underline transition-colors"
-                >
-                  {portfolioData.personal.email}
-                </a>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={`mailto:${portfolioData.personal.email}`}
+                    className="text-[#ECECEC] group-hover:text-[#9C502F] font-bold underline transition-colors break-all"
+                  >
+                    {portfolioData.personal.email}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className={`px-2.5 py-1 text-[11px] font-mono uppercase tracking-widest border transition-all flex items-center gap-1.5 select-none active:scale-95 cursor-pointer ${
+                      copiedEmail
+                        ? 'border-[#9C502F] bg-[#9C502F]/20 text-[#ECECEC]'
+                        : 'border-[var(--border)] bg-[#1A1A1A] text-[#808185] hover:text-[#ECECEC] hover:border-[#9C502F]'
+                    }`}
+                    title="Copy email to clipboard"
+                    aria-label="Copy email address"
+                  >
+                    {copiedEmail ? (
+                      <>
+                        <Check className="w-3 h-3 text-[#9C502F]" />
+                        <span className="text-[#ECECEC] font-bold">COPIED ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>COPY</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Micro Toast Feedback */}
+                <AnimatePresence>
+                  {copiedEmail && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute -top-7 right-3 px-2 py-0.5 bg-[#9C502F] text-white text-[10px] font-mono tracking-widest uppercase shadow-lg pointer-events-none"
+                    >
+                      COPIED TO CLIPBOARD ✓
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <div className="p-4 bg-[#141414] border border-[var(--border)] flex items-center justify-between group hover:border-[#9C502F] transition-colors">

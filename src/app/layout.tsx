@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "MOHAMED HUSSAIN N — AI + Full Stack Developer",
   description:
     "Portfolio lab of Mohamed Hussain N. AI agents, RAG systems and full-stack products. I ship systems that think.",
-  metadataBase: new URL("https://mohamedhussain.dev"),
+  metadataBase: new URL("https://mohamed-hussain-portfolio.vercel.app"),
   icons: {
     icon: [
       { url: "/icon.png?v=2" },
@@ -21,7 +21,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MOHAMED HUSSAIN N — AI + Full Stack Developer",
     description:
-      "AI agents, RAG systems and full-stack products. I ship systems that think.",
+      "Portfolio lab of Mohamed Hussain N. AI agents, RAG systems and full-stack products. I ship systems that think.",
+    url: "https://mohamed-hussain-portfolio.vercel.app",
+    siteName: "Mohamed Hussain N Portfolio",
+    images: [
+      {
+        url: "/og-image.png?v=2",
+        width: 1200,
+        height: 630,
+        alt: "MOHAMED HUSSAIN N — AI + Full Stack Developer",
+      },
+    ],
     type: "website",
     locale: "en_US",
   },
@@ -30,6 +40,7 @@ export const metadata: Metadata = {
     title: "MOHAMED HUSSAIN N — AI + Full Stack Developer",
     description:
       "AI agents, RAG systems and full-stack products. I ship systems that think.",
+    images: ["/og-image.png?v=2"],
   },
   robots: {
     index: true,

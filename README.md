@@ -84,7 +84,7 @@ Engineered with a **Swiss Editorial / Brutalist-refined aesthetic**, the project
 portfolio/
 ├── public/
 │   ├── profile.png            # High-resolution headshot
-│   ├── resume.pdf             # Direct downloadable PDF resume
+│   ├── Mohamed_Hussain_resume.pdf # Direct downloadable PDF resume
 │   └── favicon.ico
 ├── src/
 │   ├── app/

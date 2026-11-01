@@ -53,7 +53,7 @@ export function About() {
           className="mt-12 flex items-center gap-3"
         >
           <a
-            href="/resume.pdf"
+            href="/Mohamed_Hussain_resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 pl-6 pr-2 py-2 bg-[#E2E2E2] hover:bg-[#D4D4D4] text-[#0A0A0A] rounded-full text-xs font-mono uppercase tracking-widest transition-colors shadow-sm"

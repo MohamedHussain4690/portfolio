@@ -66,6 +66,21 @@ export function Projects() {
                   <p className="text-sm md:text-base text-[#808185] group-hover:text-[#ECECEC] transition-colors leading-relaxed max-w-3xl">
                     {project.description}
                   </p>
+
+                  {/* Engineering Metrics Chips */}
+                  {project.metrics && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {project.metrics.map((metric) => (
+                        <span
+                          key={metric}
+                          className="px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider bg-[#1B120C] border border-[#9C502F]/40 text-[#E09A7A] flex items-center gap-1.5 select-none"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#9C502F]" />
+                          {metric}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Bottom Row: Tech Tags & Links */}

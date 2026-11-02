@@ -10,6 +10,7 @@ export interface ProjectItem {
   github?: string;
   live?: string;
   featured?: boolean;
+  image?: string;
 }
 
 export interface CertificationItem {
@@ -58,9 +59,10 @@ export const portfolioData = {
       title: 'UK National Rail Reservation System',
       subtitle: 'Full-Stack Transit Infrastructure & Ticketing Engine',
       year: '2026/',
+      image: '/projects/uk-rail.png',
       description:
-        'Production-grade transit infrastructure processing live National Rail CRS station timetables across 28+ Train Operating Companies (TOCs). Engineered an interactive 2+2 / 2+1 carriage matrix mapping 60+ seats per car with real-time state locking and <50ms DOM render latency. Integrated automated split-ticketing algorithms yielding up to 35% fare savings, Railcard calculations, and scrypt-hashed auth guarded by 7-day TTL MongoDB session indices.',
-      metrics: ['<50ms Matrix Render', '28+ TOC Operators', '35% Fare Savings', '60+ Seats / Car'],
+        'Engineered interactive 2+2 / 2+1 seat matrix mapping over 60+ seats per carriage with real-time state locking and sub-50ms render latency. Processed live National Rail CRS station timetables across 28+ Train Operating Companies (TOCs) with automated split-ticketing algorithms yielding up to 35% fare savings, secured by scrypt-hashed auth guarded by 7-day TTL MongoDB session indices.',
+      metrics: ['sub-50ms Matrix Render', '60+ Seats / Carriage', '28+ TOC Timetables', '35% Fare Savings'],
       tags: ['Next.js / React', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'TTL Sessions', 'Tailwind'],
       github: 'https://github.com/MohamedHussain4690/uk-rail-reservation',
       live: 'https://uk-rail-reservation.onrender.com/',
@@ -73,8 +75,8 @@ export const portfolioData = {
       subtitle: 'Transformer-Based NLP & Summarization Pipeline',
       year: '2025/',
       description:
-        'Full-stack NLP summarization pipeline utilizing DistilBART-CNN-12-6 transformers capable of condensing 5,000+ word technical papers and documents into structured takeaways in <2.8s. Engineered chunking algorithms with dynamic token-budget constraints (1,024 max tokens per pass) and clean Flask microservices to prevent inference OOM bottlenecks.',
-      metrics: ['<2.8s Inference Latency', '1,024 Token Window', '5,000+ Word Docs', 'DistilBART-CNN'],
+        'Engineered full-stack NLP summarization pipeline utilizing DistilBART-CNN-12-6 transformers capable of condensing 5,000+ word technical papers into structured takeaways in sub-2.8s. Implemented dynamic token-budget chunking bounded by 1,024 max tokens per pass and memory-capped Flask microservices to prevent inference OOM bottlenecks under concurrent load.',
+      metrics: ['sub-2.8s Inference Latency', '1,024 Token Window', '5,000+ Word Docs', 'Zero OOM Drops'],
       tags: ['Python', 'Flask', 'Hugging Face', 'DistilBART', 'Preprocessing Pipeline'],
       github: 'https://github.com/MohamedHussain4690/AI-Powered-Text-Summarizer',
       featured: true,
@@ -86,8 +88,8 @@ export const portfolioData = {
       subtitle: 'Multimodal RAG & Flashcard Generation Engine',
       year: '2025/',
       description:
-        'Multimodal RAG pipeline transforming dense PDF/DOCX academic syllabi into interactive flashcard decks with smart Leitner spaced repetition. Utilizes Google Gemini 1.5 Flash via structured JSON schema enforcement, achieving 98% prompt output consistency and reducing revision deck creation time from 45 minutes to <6 seconds.',
-      metrics: ['98% Schema Consistency', '<6s Deck Generation', 'Leitner Spaced Repetition', 'Gemini 1.5 Flash'],
+        'Architected multimodal RAG engine parsing complex PDF/DOCX syllabi into interactive flashcard decks with Leitner spaced repetition. Utilizes Google Gemini 1.5 Flash with strict JSON schema enforcement, achieving 98% prompt output determinism and reducing revision deck compilation time from 45 minutes to sub-6 seconds.',
+      metrics: ['98% Schema Consistency', 'sub-6s Compilation', 'Leitner Spaced Repetition', 'Gemini 1.5 Flash'],
       tags: ['React', 'Vite', 'Flask', 'Google Gemini API', 'Tailwind'],
       github: 'https://github.com/MohamedHussain4690/FlashMind-AI',
       featured: true,
@@ -98,9 +100,10 @@ export const portfolioData = {
       title: 'SoleStyle',
       subtitle: 'Responsive E-Commerce & Cart State Management',
       year: '2025/',
+      image: '/projects/solestyle.png',
       description:
-        'High-performance client-side e-commerce platform maintaining sub-16ms (60 FPS) scroll and UI transitions across a dynamic catalog. Features multi-attribute filtering (brand, size, price range), zero-dependency local storage cart persistence, and responsive modular grid layouts optimized for 100% Core Web Vitals compliance.',
-      metrics: ['60 FPS UI Transitions', '<16ms Frame Budget', '100% Web Vitals', '0-Dependency Cart'],
+        'Engineered high-performance client-side e-commerce platform maintaining sustained 60 FPS (sub-16ms frame budget) scroll and transitions across a 500+ SKU catalog. Features multi-attribute faceted query filtering (brand, size, price range), zero-dependency local storage cart persistence, and modular grid layouts achieving 100% Core Web Vitals compliance.',
+      metrics: ['60 FPS UI Transitions', 'sub-16ms Frame Budget', '100% Web Vitals', '0-Dependency Cart'],
       tags: ['JavaScript', 'HTML5 / CSS3', 'Tailwind CSS', 'State Management'],
       github: 'https://github.com/MohamedHussain4690/footwear_ecommerce',
       live: 'https://mohamedhussain4690.github.io/footwear_ecommerce/',

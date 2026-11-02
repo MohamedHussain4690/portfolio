@@ -11,7 +11,7 @@ export function Hero() {
   const opacityTransform = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
-    <section id="home" data-canvas="dark" className="relative min-h-screen flex flex-col justify-between px-4 sm:px-6 md:px-12 pt-28 sm:pt-32 pb-8 sm:pb-12 overflow-hidden bg-[var(--bg)] border-b border-[var(--border)]">
+    <section id="home" data-canvas="dark" className="relative min-h-screen flex flex-col justify-between px-3.5 sm:px-6 md:px-12 pt-24 sm:pt-32 pb-8 sm:pb-12 overflow-hidden bg-[var(--bg)] border-b border-[var(--border)]">
       {/* Corner Markers - Hidden on compact mobile to avoid collision */}
       <div className="hidden sm:block absolute bottom-6 left-6 font-mono text-[11px] text-[var(--muted)] select-none">
         13.0827° N, 80.2707° E
@@ -30,13 +30,13 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Status Pill with Comfortable Mobile Breathing Room */}
-            <div className="inline-flex items-center gap-2.5 px-3 py-1.5 bg-[#141414] border border-[var(--border)] font-mono text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest text-[#9C502F] mb-4 sm:mb-6 w-fit select-none">
+            {/* Status Pill with Generous Mobile Breathing Room (<380px optimized) */}
+            <div className="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-[#141414] border border-[var(--border)] font-mono text-[9px] xs:text-[10px] sm:text-xs uppercase tracking-wide sm:tracking-widest text-[#9C502F] mb-4 sm:mb-6 max-w-full select-none">
               <span className="w-2 h-2 rounded-full bg-[#9C502F] animate-pulse shrink-0" />
-              <span>FINAL-YEAR CSE &middot; AI + FULL-STACK BUILDER</span>
+              <span className="truncate">FINAL-YEAR CSE &middot; AI + FULL-STACK BUILDER</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase tracking-tight text-[var(--foreground)] leading-[0.95]">
+            <h1 className="text-[2.2rem] xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase tracking-tight text-[var(--foreground)] leading-[1.0] sm:leading-[0.95]">
               MOHAMED <br />
               <span className="text-[#9C502F]">HUSSAIN</span>
             </h1>

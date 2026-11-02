@@ -269,20 +269,38 @@ export function Skills() {
                     setActiveIndex(idx);
                     setIsPaused(true);
                   }}
-                  className={`w-full text-left px-5 py-3.5 font-mono text-xs uppercase tracking-wider border transition-all flex items-center justify-between cursor-pointer ${
+                  className={`w-full text-left p-4 font-mono text-xs uppercase tracking-wider border transition-all flex flex-col gap-2 cursor-pointer ${
                     isActive
-                      ? 'bg-[#18120D] border-[#9C502F] text-[#ECECEC] font-bold shadow-lg'
+                      ? 'bg-[#18120D] border-[#9C502F] text-[#ECECEC] font-bold shadow-lg ring-1 ring-[#9C502F]/30'
                       : 'bg-[#0A0A0A] border-[var(--border)] text-[#808185] hover:border-[#ECECEC]/40 hover:text-[#ECECEC]'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="text-[#808185]">[{String(idx + 1).padStart(2, '0')}]</span> {cat.category}
-                  </span>
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      isActive ? 'bg-[#9C502F]' : 'bg-transparent border border-[#808185]'
-                    }`}
-                  />
+                  <div className="w-full flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <span className={isActive ? 'text-[#9C502F]' : 'text-[#808185]'}>[{String(idx + 1).padStart(2, '0')}]</span>
+                      <span>{cat.category}</span>
+                    </span>
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        isActive ? 'bg-[#9C502F]' : 'bg-transparent border border-[#808185]'
+                      }`}
+                    />
+                  </div>
+                  {/* Micro list of tools for 2-second recruiter scanning */}
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {cat.skills.map((s) => (
+                      <span
+                        key={s.name}
+                        className={`text-[9px] px-2 py-0.5 border ${
+                          isActive
+                            ? 'bg-[#22160F] border-[#9C502F]/40 text-[#E09A7A]'
+                            : 'bg-[#141414] border-[var(--border)] text-[#808185]'
+                        }`}
+                      >
+                        {s.name}
+                      </span>
+                    ))}
+                  </div>
                 </button>
               );
             })}

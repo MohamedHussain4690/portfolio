@@ -1,3 +1,8 @@
+export interface ProjectImage {
+  src: string;
+  caption?: string;
+}
+
 export interface ProjectItem {
   id: string;
   number: string;
@@ -11,6 +16,7 @@ export interface ProjectItem {
   live?: string;
   featured?: boolean;
   image?: string;
+  images?: ProjectImage[];
 }
 
 export interface CertificationItem {
@@ -60,6 +66,14 @@ export const portfolioData = {
       subtitle: 'Full-Stack Transit Infrastructure & Ticketing Engine',
       year: '2026/',
       image: '/projects/uk-rail.png',
+      images: [
+        { src: '/projects/uk-rail.png', caption: '01/06 // AUTH & PASSENGER GATEWAY' },
+        { src: '/projects/uk-rail-planner.png', caption: '02/06 // CRS JOURNEY PLANNER & 90-DAY CALENDAR' },
+        { src: '/projects/uk-rail-time.png', caption: '03/06 // PRECISION CLOCK & SPLIT-TICKET ENGINE' },
+        { src: '/projects/uk-rail-fares.png', caption: '04/06 // FARE MATRIX & REAL-TIME SAVINGS' },
+        { src: '/projects/uk-rail-departures.png', caption: '05/06 // LIVE DEPARTURE SLOTS & CALLING POINTS' },
+        { src: '/projects/uk-rail-board.png', caption: '06/06 // MULTI-TOC TIMETABLE & PLATFORM STATUS' },
+      ],
       description:
         'Engineered interactive 2+2 / 2+1 seat matrix mapping over 60+ seats per carriage with real-time state locking and sub-50ms render latency. Processed live National Rail CRS station timetables across 28+ Train Operating Companies (TOCs) with automated split-ticketing algorithms yielding up to 35% fare savings, secured by scrypt-hashed auth guarded by 7-day TTL MongoDB session indices.',
       metrics: ['sub-50ms Matrix Render', '60+ Seats / Carriage', '28+ TOC Timetables', '35% Fare Savings'],
@@ -101,6 +115,9 @@ export const portfolioData = {
       subtitle: 'Responsive E-Commerce & Cart State Management',
       year: '2025/',
       image: '/projects/solestyle.png',
+      images: [
+        { src: '/projects/solestyle.png', caption: '01/01 // DYNAMIC PRODUCT CATALOG & CART STATE' },
+      ],
       description:
         'Engineered high-performance client-side e-commerce platform maintaining sustained 60 FPS (sub-16ms frame budget) scroll and transitions across a 500+ SKU catalog. Features multi-attribute faceted query filtering (brand, size, price range), zero-dependency local storage cart persistence, and modular grid layouts achieving 100% Core Web Vitals compliance.',
       metrics: ['60 FPS UI Transitions', 'sub-16ms Frame Budget', '100% Web Vitals', '0-Dependency Cart'],

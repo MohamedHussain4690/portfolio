@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { portfolioData, ProjectItem } from '@/data/portfolio';
-import { ArrowUpRight, Code, Lock, Terminal, Cpu, CheckCircle2 } from 'lucide-react';
+import { portfolioData } from '@/data/portfolio';
+import { ArrowUpRight, Code, Lock, Terminal } from 'lucide-react';
 
 function getHostname(url?: string): string {
   if (!url) return 'system.engine';

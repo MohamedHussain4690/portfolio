@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { portfolioData, ProjectItem } from '@/data/portfolio';
@@ -30,12 +31,20 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const hasMultiple = imageList.length > 1;
   const currentImage = imageList[currentIndex] || imageList[0];
 
   useEffect(() => {
     if (!isExpanded) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsExpanded(false);
       if (e.key === 'ArrowLeft' && hasMultiple) {
@@ -46,7 +55,10 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isExpanded, hasMultiple, imageList.length]);
 
   if (imageList.length === 0) return null;
@@ -213,109 +225,117 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
         </div>
       </div>
 
-      {/* High-Resolution Zoom Lightbox Modal */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6"
-            onClick={() => setIsExpanded(false)}
-          >
-            {/* Lightbox Header */}
-            <div
-              className="flex items-center justify-between border-b border-white/10 pb-3"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+      {/* High-Resolution Zoom Lightbox Modal via Portal directly to Document Body */}
+      {mounted &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 select-none"
+                onClick={() => setIsExpanded(false)}
+              >
+                {/* Lightbox Header */}
+                <div
+                  className="flex items-center justify-between border-b border-white/10 pb-3"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+                    </div>
+                    <span className="font-mono text-xs sm:text-sm text-[#ECECEC] font-bold uppercase tracking-wider truncate max-w-md sm:max-w-2xl">
+                      {project.title} &middot; {currentImage.caption}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {hasMultiple && (
+                      <span className="font-mono text-xs text-[#808185]">
+                        {currentIndex + 1} / {imageList.length}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsExpanded(false)}
+                      className="p-1.5 rounded-full bg-white/10 hover:bg-[#9C502F] text-white transition-colors cursor-pointer"
+                      aria-label="Close zoomed view"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <span className="font-mono text-xs sm:text-sm text-[#ECECEC] font-bold uppercase tracking-wider truncate max-w-md sm:max-w-2xl">
-                  {project.title} &middot; {currentImage.caption}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                {hasMultiple && (
-                  <span className="font-mono text-xs text-[#808185]">
-                    {currentIndex + 1} / {imageList.length}
+
+                {/* Lightbox Center Image View */}
+                <div
+                  className="relative flex-1 my-4 flex items-center justify-center overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="relative w-full h-full max-w-6xl max-h-[82vh]">
+                    <Image
+                      src={currentImage.src}
+                      alt={`${project.title} - ${currentImage.caption}`}
+                      fill
+                      sizes="100vw"
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
+
+                  {/* Modal Prev / Next Navigation */}
+                  {hasMultiple && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handlePrev}
+                        className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
+                        aria-label="Previous image"
+                      >
+                        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
+                        aria-label="Next image"
+                      >
+                        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Lightbox Footer Bar */}
+                <div
+                  className="flex items-center justify-between border-t border-white/10 pt-3 font-mono text-xs text-[#808185]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="hidden sm:inline">
+                    PRESS ESC OR CLICK BACKGROUND TO CLOSE &middot; USE ARROW KEYS TO SWIPE
                   </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded(false)}
-                  className="p-1.5 rounded-full bg-white/10 hover:bg-[#9C502F] text-white transition-colors cursor-pointer"
-                  aria-label="Close zoomed view"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Lightbox Center Image View */}
-            <div
-              className="relative flex-1 my-4 flex items-center justify-center overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative w-full h-full max-w-6xl max-h-[85vh]">
-                <Image
-                  src={currentImage.src}
-                  alt={`${project.title} - ${currentImage.caption}`}
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-
-              {/* Modal Prev / Next Navigation */}
-              {hasMultiple && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handlePrev}
-                    className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Lightbox Footer Bar */}
-            <div
-              className="flex items-center justify-between border-t border-white/10 pt-3 font-mono text-xs text-[#808185]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <span className="hidden sm:inline">PRESS ESC OR CLICK BACKGROUND TO CLOSE &middot; USE ARROW KEYS TO SWIPE</span>
-              <span className="sm:hidden">TAP BACKGROUND TO CLOSE</span>
-              {project.live && (
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[#ECECEC] hover:text-[#9C502F] uppercase transition-colors"
-                >
-                  <span>LAUNCH DEMO</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-              )}
-            </div>
-          </motion.div>
+                  <span className="sm:hidden">TAP BACKGROUND TO CLOSE</span>
+                  {project.live && (
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[#ECECEC] hover:text-[#9C502F] uppercase transition-colors"
+                    >
+                      <span>LAUNCH DEMO</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }

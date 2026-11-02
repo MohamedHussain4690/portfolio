@@ -1,10 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { portfolioData, ProjectItem } from '@/data/portfolio';
-import { ArrowUpRight, Code, Lock, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Code,
+  Lock,
+  Terminal,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  X,
+} from 'lucide-react';
 
 function getHostname(url?: string): string {
   if (!url) return 'system.engine';
@@ -12,18 +21,35 @@ function getHostname(url?: string): string {
 }
 
 function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
-  const imageList = project.images && project.images.length > 0
-    ? project.images
-    : project.image
-    ? [{ src: project.image, caption: '01/01 // PRODUCTION INTERFACE' }]
-    : [];
+  const imageList =
+    project.images && project.images.length > 0
+      ? project.images
+      : project.image
+      ? [{ src: project.image, caption: '01/01 // PRODUCTION INTERFACE' }]
+      : [];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const hasMultiple = imageList.length > 1;
+  const currentImage = imageList[currentIndex] || imageList[0];
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsExpanded(false);
+      if (e.key === 'ArrowLeft' && hasMultiple) {
+        setCurrentIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1));
+      }
+      if (e.key === 'ArrowRight' && hasMultiple) {
+        setCurrentIndex((prev) => (prev === imageList.length - 1 ? 0 : prev + 1));
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isExpanded, hasMultiple, imageList.length]);
 
   if (imageList.length === 0) return null;
-
-  const currentImage = imageList[currentIndex];
-  const hasMultiple = imageList.length > 1;
 
   const handlePrev = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,91 +64,109 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
   };
 
   return (
-    <div className="group/mockup block bg-[#101010] border border-[var(--border)] hover:border-[#9C502F]/60 transition-all duration-300 overflow-hidden shadow-2xl relative select-none">
-      {/* Browser Window Header */}
-      <div className="bg-[#181818] px-3.5 py-2.5 border-b border-[var(--border)] flex items-center justify-between text-[#808185]">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80" />
+    <>
+      <div className="group/mockup block bg-[#101010] border border-[var(--border)] hover:border-[#9C502F]/60 transition-all duration-300 overflow-hidden shadow-2xl relative select-none">
+        {/* Browser Window Header */}
+        <div className="bg-[#181818] px-3.5 py-2.5 border-b border-[var(--border)] flex items-center justify-between text-[#808185]">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80" />
+          </div>
+
+          {/* Domain Pill */}
+          <div className="px-3 py-0.5 bg-[#0D0D0D] border border-white/10 rounded-full font-mono text-[10px] text-[#808185] flex items-center gap-1.5 max-w-[220px] sm:max-w-xs truncate">
+            <Lock className="w-2.5 h-2.5 text-[#27C93F] shrink-0" />
+            <span className="truncate">{getHostname(project.live || project.github)}</span>
+          </div>
+
+          {/* Live Status Pill */}
+          <div className="flex items-center gap-1.5 font-mono text-[9px] text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline">200 OK</span>
+          </div>
         </div>
 
-        {/* Domain & Slide Indicator Pill */}
-        <div className="px-3 py-0.5 bg-[#0D0D0D] border border-white/10 rounded-full font-mono text-[10px] text-[#808185] flex items-center gap-1.5 max-w-[220px] sm:max-w-xs truncate">
-          <Lock className="w-2.5 h-2.5 text-[#27C93F] shrink-0" />
-          <span className="truncate">{getHostname(project.live || project.github)}</span>
+        {/* Dedicated Sub-Bar with Module Caption (Never overlaps screenshot) */}
+        <div className="bg-[#131313] px-3.5 sm:px-4 py-2 border-b border-[var(--border)] flex items-center justify-between text-[#808185] font-mono text-[10px] sm:text-[11px]">
+          <div className="flex items-center gap-2 truncate">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#9C502F] shrink-0" />
+            <span className="text-[#ECECEC] font-bold truncate tracking-wider">
+              {currentImage.caption || 'SYSTEM INTERFACE'}
+            </span>
+          </div>
           {hasMultiple && (
-            <span className="text-[#9C502F] font-bold shrink-0 ml-1">
+            <span className="text-[#9C502F] font-bold text-[10px] uppercase tracking-wider shrink-0 ml-2">
               [{currentIndex + 1}/{imageList.length}]
             </span>
           )}
         </div>
 
-        {/* Live Status Pill */}
-        <div className="flex items-center gap-1.5 font-mono text-[9px] text-emerald-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="hidden sm:inline">200 OK</span>
-        </div>
-      </div>
+        {/* Main Image Viewport: Clean object-contain to display 100% of UI without cutoffs */}
+        <div
+          onClick={() => setIsExpanded(true)}
+          className="relative aspect-[16/10] bg-[#0A0A0A] overflow-hidden flex items-center justify-center p-2 cursor-zoom-in group/canvas"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImage.src}
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.01 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="relative w-full h-full flex items-center justify-center"
+            >
+              <Image
+                src={currentImage.src}
+                alt={`${project.title} - ${currentImage.caption || 'Preview'}`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-contain filter brightness-[98%] contrast-[102%]"
+                priority={currentIndex === 0}
+              />
+            </motion.div>
+          </AnimatePresence>
 
-      {/* Main Image Viewport */}
-      <div className="relative aspect-[16/10] bg-[#0A0A0A] overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentImage.src}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.01 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={currentImage.src}
-              alt={`${project.title} - ${currentImage.caption || 'Preview'}`}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-top filter brightness-[96%] contrast-[104%]"
-              priority={currentIndex === 0}
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Caption Tape / Subtitle at Top-Left */}
-        {currentImage.caption && (
-          <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-            <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-[#ECECEC] bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 shadow-lg">
-              {currentImage.caption}
-            </span>
+          {/* Hover Zoom Hint */}
+          <div className="absolute top-2.5 right-2.5 opacity-0 group-hover/canvas:opacity-100 transition-opacity bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 rounded font-mono text-[9px] text-[#ECECEC] pointer-events-none flex items-center gap-1.5 shadow-lg">
+            <Maximize2 className="w-3 h-3 text-[#9C502F]" />
+            <span>CLICK TO ZOOM</span>
           </div>
-        )}
+        </div>
 
-        {/* Sliding Navigation Buttons (Swipe / Click between screenshots) */}
-        {hasMultiple && (
-          <>
-            <button
-              type="button"
-              onClick={handlePrev}
-              aria-label="Previous screenshot"
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/15 hover:border-[#9C502F] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xl backdrop-blur-md hover:scale-110 active:scale-95"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              aria-label="Next screenshot"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/15 hover:border-[#9C502F] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xl backdrop-blur-md hover:scale-110 active:scale-95"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-          </>
-        )}
-
-        {/* Bottom Interactive Bar: Dots Indicator & Live Link */}
-        <div className="absolute bottom-0 inset-x-0 z-20 p-2.5 sm:p-3 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-center justify-between pointer-events-auto">
-          {/* Slide Indicator Dots */}
+        {/* Clean Bottom Control Bar */}
+        <div className="bg-[#141414] px-3.5 py-2.5 border-t border-[var(--border)] flex items-center justify-between gap-2 select-none">
+          {/* Left: Previous & Next Controls */}
           {hasMultiple ? (
-            <div className="flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-2.5 py-1.5 border border-white/10 rounded-full">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handlePrev}
+                aria-label="Previous screenshot"
+                className="px-2.5 py-1 bg-[#1A1A1A] hover:bg-[#9C502F] text-[#ECECEC] hover:text-white border border-[var(--border)] hover:border-[#9C502F] font-mono text-[10px] uppercase tracking-wider flex items-center gap-1 transition-all rounded cursor-pointer active:scale-95"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">PREV</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                aria-label="Next screenshot"
+                className="px-2.5 py-1 bg-[#1A1A1A] hover:bg-[#9C502F] text-[#ECECEC] hover:text-white border border-[var(--border)] hover:border-[#9C502F] font-mono text-[10px] uppercase tracking-wider flex items-center gap-1 transition-all rounded cursor-pointer active:scale-95"
+              >
+                <span className="hidden sm:inline">NEXT</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <span className="font-mono text-[9px] text-[#808185] uppercase tracking-wider">
+              VERIFIED SYSTEM DEPLOY
+            </span>
+          )}
+
+          {/* Center: Slide Indicator Dots */}
+          {hasMultiple && (
+            <div className="flex items-center gap-1.5 bg-black/50 px-2.5 py-1 border border-white/5 rounded-full">
               {imageList.map((img, idx) => (
                 <button
                   key={img.src}
@@ -135,33 +179,144 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
                   className={`transition-all duration-200 rounded-full cursor-pointer ${
                     idx === currentIndex
                       ? 'w-5 h-1.5 bg-[#9C502F]'
-                      : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
+                      : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/70'
                   }`}
                   aria-label={`Jump to slide ${idx + 1}`}
                 />
               ))}
             </div>
-          ) : (
-            <span className="font-mono text-[9px] text-[#808185] uppercase">
-              VERIFIED PRODUCTION DEPLOY
-            </span>
           )}
 
-          {/* Direct Launch Link */}
-          {project.live && (
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-white bg-black/80 hover:bg-[#9C502F] hover:text-white backdrop-blur-md px-2.5 py-1 border border-white/15 transition-colors shadow-md cursor-pointer"
+          {/* Right: Zoom Fullscreen & Live Demo */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsExpanded(true)}
+              className="px-2.5 py-1 bg-[#1A1A1A] hover:bg-white/10 text-[#808185] hover:text-[#ECECEC] border border-[var(--border)] font-mono text-[10px] uppercase tracking-wider flex items-center gap-1 transition-all rounded cursor-pointer"
+              title="Zoom into high-res view"
             >
-              <span>LIVE DEMO</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </a>
-          )}
+              <Maximize2 className="w-3 h-3 text-[#9C502F]" />
+              <span>ZOOM</span>
+            </button>
+            {project.live && (
+              <a
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 bg-[#9C502F] hover:bg-[#B35E38] text-white font-mono text-[10px] uppercase tracking-wider flex items-center gap-1 transition-colors rounded shadow-sm cursor-pointer"
+              >
+                <span>LIVE DEMO</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* High-Resolution Zoom Lightbox Modal */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6"
+            onClick={() => setIsExpanded(false)}
+          >
+            {/* Lightbox Header */}
+            <div
+              className="flex items-center justify-between border-b border-white/10 pb-3"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+                </div>
+                <span className="font-mono text-xs sm:text-sm text-[#ECECEC] font-bold uppercase tracking-wider truncate max-w-md sm:max-w-2xl">
+                  {project.title} &middot; {currentImage.caption}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {hasMultiple && (
+                  <span className="font-mono text-xs text-[#808185]">
+                    {currentIndex + 1} / {imageList.length}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded(false)}
+                  className="p-1.5 rounded-full bg-white/10 hover:bg-[#9C502F] text-white transition-colors cursor-pointer"
+                  aria-label="Close zoomed view"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Lightbox Center Image View */}
+            <div
+              className="relative flex-1 my-4 flex items-center justify-center overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative w-full h-full max-w-6xl max-h-[85vh]">
+                <Image
+                  src={currentImage.src}
+                  alt={`${project.title} - ${currentImage.caption}`}
+                  fill
+                  sizes="100vw"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+
+              {/* Modal Prev / Next Navigation */}
+              {hasMultiple && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-[#9C502F] text-white border border-white/20 hover:border-[#9C502F] transition-all cursor-pointer shadow-2xl backdrop-blur-md"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Lightbox Footer Bar */}
+            <div
+              className="flex items-center justify-between border-t border-white/10 pt-3 font-mono text-xs text-[#808185]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="hidden sm:inline">PRESS ESC OR CLICK BACKGROUND TO CLOSE &middot; USE ARROW KEYS TO SWIPE</span>
+              <span className="sm:hidden">TAP BACKGROUND TO CLOSE</span>
+              {project.live && (
+                <a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-[#ECECEC] hover:text-[#9C502F] uppercase transition-colors"
+                >
+                  <span>LAUNCH DEMO</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

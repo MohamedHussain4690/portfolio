@@ -116,7 +116,9 @@ export const portfolioData = {
       year: '2025/',
       image: '/projects/solestyle.webp',
       images: [
-        { src: '/projects/solestyle.webp', caption: '01/01 // DYNAMIC PRODUCT CATALOG & CART STATE' },
+        { src: '/projects/solestyle.webp', caption: '01/03 // HERO SHOWCASE & BRAND STATEMENT' },
+        { src: '/projects/solestyle-categories.webp', caption: '02/03 // MULTI-CATEGORY COLLECTIONS (MEN / WOMEN / KIDS)' },
+        { src: '/projects/solestyle-products.webp', caption: '03/03 // DYNAMIC CATALOG GRID & QUICK-CART ACTIONS' },
       ],
       description:
         'Engineered high-performance client-side e-commerce platform maintaining sustained 60 FPS (sub-16ms frame budget) scroll and transitions across a 500+ SKU catalog. Features multi-attribute faceted query filtering (brand, size, price range), zero-dependency local storage cart persistence, and modular grid layouts achieving 100% Core Web Vitals compliance.',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -22,12 +22,13 @@ function getHostname(url?: string): string {
 }
 
 function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
-  const imageList =
-    project.images && project.images.length > 0
+  const imageList = useMemo(() => {
+    return project.images && project.images.length > 0
       ? project.images
       : project.image
       ? [{ src: project.image, caption: '01/01 // PRODUCTION INTERFACE' }]
       : [];
+  }, [project.images, project.image]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,7 +36,14 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Eagerly pre-cache all gallery images in browser memory so slide switching is instantaneous
+    if (typeof window !== 'undefined') {
+      imageList.forEach((img) => {
+        const pre = new window.Image();
+        pre.src = img.src;
+      });
+    }
+  }, [imageList]);
 
   const hasMultiple = imageList.length > 1;
   const currentImage = imageList[currentIndex] || imageList[0];
@@ -114,33 +122,32 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
           )}
         </div>
 
-        {/* Main Image Viewport: Clean object-contain to display 100% of UI without cutoffs */}
+        {/* Main Image Viewport: Pre-cached slides with instantaneous 0ms transition */}
         <div
           onClick={() => setIsExpanded(true)}
           className="relative aspect-[16/10] bg-[#0A0A0A] overflow-hidden flex items-center justify-center p-2 cursor-zoom-in group/canvas"
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentImage.src}
-              initial={{ opacity: 0, scale: 0.99 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.01 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="relative w-full h-full flex items-center justify-center"
+          {imageList.map((img, idx) => (
+            <div
+              key={img.src}
+              className={`absolute inset-0 p-2 flex items-center justify-center transition-opacity duration-200 ease-out ${
+                idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
+              }`}
             >
               <Image
-                src={currentImage.src}
-                alt={`${project.title} - ${currentImage.caption || 'Preview'}`}
+                src={img.src}
+                alt={`${project.title} - ${img.caption || 'Preview'}`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-contain filter brightness-[98%] contrast-[102%]"
-                priority={currentIndex === 0}
+                priority
+                unoptimized
               />
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          ))}
 
           {/* Hover Zoom Hint */}
-          <div className="absolute top-2.5 right-2.5 opacity-0 group-hover/canvas:opacity-100 transition-opacity bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 rounded font-mono text-[9px] text-[#ECECEC] pointer-events-none flex items-center gap-1.5 shadow-lg">
+          <div className="absolute top-2.5 right-2.5 z-20 opacity-0 group-hover/canvas:opacity-100 transition-opacity bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 rounded font-mono text-[9px] text-[#ECECEC] pointer-events-none flex items-center gap-1.5 shadow-lg">
             <Maximize2 className="w-3 h-3 text-[#9C502F]" />
             <span>CLICK TO ZOOM</span>
           </div>
@@ -277,14 +284,24 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="relative w-full h-full max-w-6xl max-h-[82vh]">
-                    <Image
-                      src={currentImage.src}
-                      alt={`${project.title} - ${currentImage.caption}`}
-                      fill
-                      sizes="100vw"
-                      className="object-contain"
-                      priority
-                    />
+                    {imageList.map((img, idx) => (
+                      <div
+                        key={`modal-${img.src}`}
+                        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                          idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
+                        }`}
+                      >
+                        <Image
+                          src={img.src}
+                          alt={`${project.title} - ${img.caption}`}
+                          fill
+                          sizes="100vw"
+                          className="object-contain"
+                          priority
+                          unoptimized
+                        />
+                      </div>
+                    ))}
                   </div>
 
                   {/* Modal Prev / Next Navigation */}

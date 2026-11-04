@@ -14,22 +14,12 @@ export function Contact() {
     e.preventDefault();
     e.stopPropagation();
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(portfolioData.personal.email);
-      } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = portfolioData.personal.email;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-      }
+      await navigator.clipboard.writeText(portfolioData.personal.email);
       setCopiedEmail(true);
       setTimeout(() => setCopiedEmail(false), 2000);
-    } catch {
-      setCopiedEmail(false);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+      alert('Could not copy email. Please select it manually.');
     }
   };
 

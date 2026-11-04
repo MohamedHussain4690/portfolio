@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
 // In-Memory Rate Limiter (sliding bucket per IP)
+// shortcut: in-memory map resets on serverless cold start, upgrade to @upstash/ratelimit for persistent limits
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_REQUESTS_PER_WINDOW = 5; // Max 5 submissions per 15 minutes per IP
 const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -104,33 +105,12 @@ export async function POST(request: NextRequest) {
     // 5. Header injection defense: sanitize newlines/control characters from name
     const sanitizedName = name.replace(/[\r\n\t]/g, ' ').trim().slice(0, 100);
 
-    // 6. Email to portfolio owner (both plain-text and escaped HTML)
+    // 6. Email to portfolio owner (plain-text only, safer and simpler)
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_USER,
       subject: `New Contact Form Submission from ${sanitizedName}`,
-      text: `New Portfolio Message\n\nFrom: ${sanitizedName}\nEmail: ${email}\n\nMessage:\n${message}\n\n---\nTransmitted from portfolio contact portal.`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
-          <h2 style="color: #9C502F;">New Message from Your Portfolio</h2>
-          <hr style="border: none; border-top: 1px solid #9C502F;">
-
-          <p><strong>Name:</strong> ${escapeHtml(sanitizedName)}</p>
-          <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
-
-          <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #9C502F; margin: 20px 0;">
-            <strong>Message:</strong>
-            <p style="margin-top: 10px; white-space: pre-wrap; word-wrap: break-word;">
-              ${escapeHtml(message)}
-            </p>
-          </div>
-
-          <hr style="border: none; border-top: 1px solid #eee;">
-          <p style="color: #888; font-size: 11px;">
-            Transmitted from portfolio contact portal. Client IP: ${escapeHtml(clientIp)}
-          </p>
-        </div>
-      `,
+      text: `New Portfolio Message\n\nFrom: ${sanitizedName}\nEmail: ${email}\n\nMessage:\n${message}\n\n---\nTransmitted from portfolio contact portal.\nClient IP: ${clientIp}`,
       replyTo: email,
     };
 
@@ -138,24 +118,20 @@ export async function POST(request: NextRequest) {
     const transporter = getTransporter();
     await transporter.sendMail(mailOptions);
 
-    // 7. Confirmation email to the visitor
+    // 7. Confirmation email to the visitor (plain-text only)
     const confirmationEmail = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Message received — Mohamed Hussain N',
-      text: `Hello ${sanitizedName},\n\nThank you for reaching out! I've received your transmission and will review it and get back to you shortly.\n\nBest regards,\nMohamed Hussain N\nAI + Full Stack Developer\n`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
-          <h2 style="color: #9C502F;">Thank You, ${escapeHtml(sanitizedName)}!</h2>
-          <p>I've received your message and will get back to you as soon as possible.</p>
-          <p>Looking forward to connecting!</p>
-          <br>
-          <p>Best regards,<br><strong>Mohamed Hussain N</strong><br>AI + Full Stack Developer</p>
-        </div>
-      `,
+      text: `Hello ${sanitizedName},\n\nThank you for reaching out! I've received your transmission and will review it and get back to you shortly.\n\nBest regards,\nMohamed Hussain N\nAI + Full Stack Developer`,
     };
 
-    await transporter.sendMail(confirmationEmail);
+    try {
+      await transporter.sendMail(confirmationEmail);
+    } catch (err) {
+      console.error('Failed to send confirmation email:', err);
+      // Don't fail the main request if confirmation fails
+    }
 
     return NextResponse.json(
       { success: true, message: 'Email sent successfully' },
@@ -169,18 +145,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Helper function to escape HTML metacharacters safely
-function escapeHtml(text: string): string {
-  const map: { [key: string]: string } = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-    '`': '&#96;',
-    '=': '&#61;',
-  };
-  return text.replace(/[&<>"'`=]/g, (m) => map[m]);
 }

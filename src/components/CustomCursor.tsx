@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
@@ -80,18 +79,11 @@ export function CustomCursor() {
   return (
     <div className="hidden md:block max-md:hidden [@media(pointer:coarse)]:hidden pointer-events-none">
       <motion.div
-        className={cn(
-          'custom-cursor-dot pointer-events-none',
-          isLight ? 'cursor-light' : 'cursor-dark'
-        )}
+        className={`custom-cursor-dot pointer-events-none ${isLight ? 'cursor-light' : 'cursor-dark'}`}
         style={{ x, y, translateX: '-50%', translateY: '-50%' }}
       />
       <motion.div
-        className={cn(
-          'custom-cursor pointer-events-none',
-          isLight ? 'cursor-light' : 'cursor-dark',
-          isHovering && 'expanded'
-        )}
+        className={`custom-cursor pointer-events-none ${isLight ? 'cursor-light' : 'cursor-dark'} ${isHovering ? 'expanded' : ''}`}
         style={{ x: ringX, y: ringY, translateX: '-50%', translateY: '-50%' }}
       />
     </div>

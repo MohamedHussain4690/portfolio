@@ -38,12 +38,6 @@ export function CustomCursor() {
       x.set(clientX);
       y.set(clientY);
       lastPosRef.current = { x: clientX, y: clientY };
-
-      const target = e.target as HTMLElement | null;
-      if (target) {
-        setIsLight(checkCanvasTheme(target));
-        setIsHovering(checkClickable(target));
-      }
     };
 
     const handleMouseOver = (e: MouseEvent) => {

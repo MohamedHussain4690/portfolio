@@ -6,7 +6,7 @@ import { portfolioData } from '@/data/portfolio';
 import { ArrowUpRight, CheckCircle2, Loader2, AlertCircle, Copy, Check } from 'lucide-react';
 
 export function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', _gotcha: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [copiedEmail, setCopiedEmail] = useState(false);
 
@@ -14,18 +14,22 @@ export function Contact() {
     e.preventDefault();
     e.stopPropagation();
     try {
-      await navigator.clipboard.writeText(portfolioData.personal.email);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(portfolioData.personal.email);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = portfolioData.personal.email;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopiedEmail(true);
       setTimeout(() => setCopiedEmail(false), 2000);
     } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = portfolioData.personal.email;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopiedEmail(true);
-      setTimeout(() => setCopiedEmail(false), 2000);
+      setCopiedEmail(false);
     }
   };
 
@@ -45,7 +49,7 @@ export function Contact() {
 
       if (response.ok) {
         setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', message: '', _gotcha: '' });
       } else {
         const data = await response.json();
         throw new Error(data?.error || 'Failed to dispatch transmission.');
@@ -202,6 +206,18 @@ export function Contact() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6 font-mono">
+              {/* Anti-Spam Honeypot Field (invisible to visitors) */}
+              <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                <input
+                  type="text"
+                  name="_gotcha"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData._gotcha}
+                  onChange={(e) => setFormData({ ...formData, _gotcha: e.target.value })}
+                />
+              </div>
+
               {/* Field 1: Name */}
               <div>
                 <label className="block text-xs uppercase tracking-wider text-[#808185] mb-2">

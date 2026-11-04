@@ -88,6 +88,12 @@ export const portfolioData = {
       title: 'AI-Powered Text Summarizer',
       subtitle: 'Transformer-Based NLP & Summarization Pipeline',
       year: '2025/',
+      image: '/projects/ai-summarizer-input.webp',
+      images: [
+        { src: '/projects/ai-summarizer-input.webp', caption: '01/03 // INPUT PROMPT & INFERENCE INTERFACE' },
+        { src: '/projects/ai-summarizer-processing.webp', caption: '02/03 // TOKEN CHUNKING & TRANSFORMER INGESTION' },
+        { src: '/projects/ai-summarizer-output.webp', caption: '03/03 // DISTILBART CONDENSED SUMMARY OUTPUT' },
+      ],
       description:
         'Engineered full-stack NLP summarization pipeline utilizing DistilBART-CNN-12-6 transformers capable of condensing 5,000+ word technical papers into structured takeaways in sub-2.8s. Implemented dynamic token-budget chunking bounded by 1,024 max tokens per pass and memory-capped Flask microservices to prevent inference OOM bottlenecks under concurrent load.',
       metrics: ['sub-2.8s Inference Latency', '1,024 Token Window', '5,000+ Word Docs', 'Zero OOM Drops'],

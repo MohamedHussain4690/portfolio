@@ -16,9 +16,11 @@ import {
   X,
 } from 'lucide-react';
 
-function getHostname(url?: string): string {
-  if (!url) return 'system.engine';
-  return url.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+function getHostname(project: ProjectItem): string {
+  if (project.live) return project.live.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (project.id === 'ai-summarizer') return '127.0.0.1:5500/ai-summarizer';
+  if (project.github) return project.github.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  return 'system.engine';
 }
 
 function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
@@ -97,7 +99,7 @@ function ProjectBrowserSlider({ project }: { project: ProjectItem }) {
           {/* Domain Pill */}
           <div className="px-3 py-0.5 bg-[#0D0D0D] border border-white/10 rounded-full font-mono text-[10px] text-[#808185] flex items-center gap-1.5 max-w-[220px] sm:max-w-xs truncate">
             <Lock className="w-2.5 h-2.5 text-[#27C93F] shrink-0" />
-            <span className="truncate">{getHostname(project.live || project.github)}</span>
+            <span className="truncate">{getHostname(project)}</span>
           </div>
 
           {/* Live Status Pill */}
@@ -385,7 +387,7 @@ export function Projects() {
         {/* Asymmetrical Editorial Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {portfolioData.projects.map((project, index) => {
-            const isLarge = index === 0 || index === 3;
+            const isLarge = Boolean(project.images && project.images.length > 0);
             return (
               <motion.div
                 key={project.id}
@@ -393,9 +395,7 @@ export function Projects() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`group relative bg-[#141414] border border-[var(--border)] p-6 sm:p-8 md:p-10 flex flex-col justify-between overflow-hidden ${
-                  isLarge ? 'md:col-span-2' : 'col-span-1'
-                }`}
+                className="group relative bg-[#141414] border border-[var(--border)] p-6 sm:p-8 md:p-10 flex flex-col justify-between overflow-hidden md:col-span-2"
               >
                 {/* Background glow on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#9C502F]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -447,62 +447,48 @@ export function Projects() {
                     </div>
                   </div>
                 ) : (
-                  /* Standard 1-Column Layout for AI Architectures */
-                  <div className="relative z-10 space-y-4 my-2">
-                    <div>
-                      <h3 className="text-2xl md:text-3xl font-extrabold uppercase tracking-tight text-[#ECECEC] group-hover:text-white transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="font-mono text-xs text-[#9C502F] uppercase tracking-wider mt-1.5 font-bold">
-                        {project.subtitle}
+                  /* Standard Balanced Layout for Projects Awaiting Screenshots */
+                  <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-2">
+                    <div className="lg:col-span-7 space-y-4">
+                      <div>
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold uppercase tracking-tight text-[#ECECEC] group-hover:text-white transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="font-mono text-xs text-[#9C502F] uppercase tracking-wider mt-1.5 font-bold">
+                          {project.subtitle}
+                        </p>
+                      </div>
+
+                      <p className="text-sm sm:text-base text-[#999999] group-hover:text-[#ECECEC] transition-colors leading-relaxed">
+                        {project.description}
                       </p>
-                    </div>
 
-                    <p className="text-sm md:text-base text-[#999999] group-hover:text-[#ECECEC] transition-colors leading-relaxed">
-                      {project.description}
-                    </p>
-
-                    {/* Hard Engineering Metrics */}
-                    {project.metrics && (
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {project.metrics.map((metric) => (
-                          <span
-                            key={metric}
-                            className="px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider bg-[#1B120C] border border-[#9C502F]/40 text-[#E09A7A] flex items-center gap-1.5 select-none"
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#9C502F]" />
-                            {metric}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Architectural Pipeline Telemetry Panel */}
-                    <div className="mt-4 p-3.5 bg-[#0D0D0D] border border-[var(--border)] font-mono text-[10px] space-y-2">
-                      <div className="flex items-center justify-between text-[#808185] border-b border-white/5 pb-1.5">
-                        <span className="flex items-center gap-1.5 text-[#9C502F]">
-                          <Terminal className="w-3 h-3" /> PIPELINE_TELEMETRY
-                        </span>
-                        <span className="text-[#808185] text-[9px]">ENGINEERING_SPEC</span>
-                      </div>
-                      {project.id === 'ai-summarizer' && (
-                        <div className="space-y-1 text-[#808185]">
-                          <div className="flex justify-between">
-                            <span>MODEL_BACKBONE:</span>
-                            <span className="text-[#ECECEC]">DistilBART-CNN-12-6</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>TOKEN_BUDGET:</span>
-                            <span className="text-[#ECECEC]">1,024 Max / Pass</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>CONCURRENCY_SAFEGUARD:</span>
-                            <span className="text-[#9C502F]">Zero OOM Memory Bounds</span>
-                          </div>
+                      {/* Hard Engineering Metrics */}
+                      {project.metrics && (
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {project.metrics.map((metric) => (
+                            <span
+                              key={metric}
+                              className="px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider bg-[#1B120C] border border-[#9C502F]/40 text-[#E09A7A] flex items-center gap-1.5 select-none"
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#9C502F]" />
+                              {metric}
+                            </span>
+                          ))}
                         </div>
                       )}
+                    </div>
+
+                    {/* Architectural Pipeline Telemetry Panel */}
+                    <div className="lg:col-span-5 p-5 bg-[#0D0D0D] border border-[var(--border)] font-mono text-[11px] space-y-3 shadow-xl">
+                      <div className="flex items-center justify-between text-[#808185] border-b border-white/5 pb-2">
+                        <span className="flex items-center gap-1.5 text-[#9C502F] font-bold">
+                          <Terminal className="w-3.5 h-3.5" /> PIPELINE_TELEMETRY
+                        </span>
+                        <span className="text-[#808185] text-[10px]">ENGINEERING_SPEC</span>
+                      </div>
                       {project.id === 'flashmind' && (
-                        <div className="space-y-1 text-[#808185]">
+                        <div className="space-y-2 text-[#808185]">
                           <div className="flex justify-between">
                             <span>INFERENCE_MODEL:</span>
                             <span className="text-[#ECECEC]">Gemini 1.5 Flash</span>

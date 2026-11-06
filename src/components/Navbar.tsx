@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { portfolioData } from '@/data/portfolio';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 
@@ -9,49 +9,50 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isLightSection, setIsLightSection] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-      const istTime = new Date(utc + 3600000 * 5.5);
-      let hours = istTime.getHours();
-      const minutes = istTime.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-      setTime(`${hours}:${minutesStr} ${ampm} IST`);
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata',
+      });
+      setTime(`${formatter.format(new Date())} IST`);
     };
 
     updateTime();
-    const timer = setInterval(updateTime, 10000);
+    const timer = setInterval(updateTime, 60000);
 
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 30) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 30);
+
+          const lightSections = document.querySelectorAll('[data-canvas="light"]');
+          let foundLight = false;
+          const scrollPos = window.scrollY + 80;
+
+          for (let i = 0; i < lightSections.length; i++) {
+            const el = lightSections[i] as HTMLElement;
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPos >= top && scrollPos < top + height) {
+              foundLight = true;
+              break;
+            }
+          }
+
+          setIsLightSection(foundLight);
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      // Check sections with light background (#F4F4F4)
-      const lightSections = document.querySelectorAll('#about, #work-with-me, #certifications, #faq');
-      let foundLight = false;
-      const scrollPos = window.scrollY + 100;
-
-      lightSections.forEach((section) => {
-        const el = section as HTMLElement;
-        const top = el.offsetTop;
-        const height = el.offsetHeight;
-        if (scrollPos >= top && scrollPos < top + height) {
-          foundLight = true;
-        }
-      });
-
-      setIsLightSection(foundLight);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
     return () => {
@@ -59,6 +60,46 @@ export function Navbar() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // Accessibility: Handle Escape key, focus trapping, and body scroll locking for mobile menu
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        return;
+      }
+
+      if (e.key === 'Tab' && menuRef.current) {
+        const focusableElements = menuRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])'
+        );
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -142,7 +183,9 @@ export function Navbar() {
               className={`p-1.5 border transition-colors duration-200 ${
                 isLightSection ? 'text-[#0A0A0A] border-black/20 bg-white' : 'text-[var(--fg)] border-[var(--border)] bg-[var(--surface)]'
               }`}
-              aria-label="Toggle menu"
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-dialog"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -152,7 +195,14 @@ export function Navbar() {
 
       {/* Mobile Fullscreen Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[var(--bg)] pt-28 px-8 flex flex-col justify-between pb-12 lg:hidden">
+        <div
+          id="mobile-nav-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          ref={menuRef}
+          className="fixed inset-0 z-40 bg-[var(--bg)] pt-28 px-8 flex flex-col justify-between pb-12 lg:hidden"
+        >
           <nav className="flex flex-col gap-6">
             {portfolioData.nav.map((item) => {
               const id = item.replace('/', '').toLowerCase();

@@ -39,8 +39,17 @@ export function FAQ() {
             return (
               <div
                 key={faq.id}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
                 onClick={() => toggleFaq(idx)}
-                className="py-8 group cursor-pointer transition-colors"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleFaq(idx);
+                  }
+                }}
+                className="py-8 group cursor-pointer transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#9C502F]"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 

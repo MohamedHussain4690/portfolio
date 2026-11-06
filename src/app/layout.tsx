@@ -1,9 +1,24 @@
 import type { Metadata } from "next";
+import { Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CustomCursor } from "@/components/CustomCursor";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["300", "400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "MOHAMED HUSSAIN N — AI + Full Stack Developer",
@@ -54,12 +69,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body className="antialiased bg-[var(--bg)] text-[var(--fg)]">
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${interTight.variable} ${jetbrainsMono.variable}`}>
+      <body className="antialiased bg-[var(--bg)] text-[var(--fg)] font-sans">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[999999] focus:px-4 focus:py-2 focus:bg-[#9C502F] focus:text-white focus:font-mono focus:text-xs focus:uppercase focus:tracking-widest focus:shadow-xl focus:outline-none"
+        >
+          Skip to content
+        </a>
         <SmoothScroll>
           <CustomCursor />
           <Navbar />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <Footer />
         </SmoothScroll>
       </body>

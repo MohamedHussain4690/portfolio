@@ -51,9 +51,18 @@ export function Certifications() {
               return (
                 <div
                   key={cert.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isActive}
                   onMouseEnter={() => setActiveCertIndex(idx)}
                   onClick={() => setActiveCertIndex(idx)}
-                  className="py-6 cursor-pointer group transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setActiveCertIndex(idx);
+                    }
+                  }}
+                  className="py-6 cursor-pointer group transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#9C502F]"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <h3

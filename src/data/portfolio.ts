@@ -175,7 +175,7 @@ export const portfolioData = {
   journey: [
     {
       id: 'm1',
-      period: '2022 — 2026',
+      period: '2023 — 2027',
       category: 'EDUCATION',
       title: 'B.E. Computer Science and Engineering',
       organization: 'Affiliated Engineering College, Chennai',

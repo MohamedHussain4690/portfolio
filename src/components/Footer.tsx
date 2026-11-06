@@ -50,7 +50,7 @@ export function Footer() {
               {portfolioData.projects.map((proj) => (
                 <li key={proj.id}>
                   <a
-                    href={proj.github || '#projects'}
+                    href={proj.live || proj.github || '#projects'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-mono text-xs text-[var(--fg)] hover:text-[var(--accent)] transition-colors uppercase flex items-center gap-1"

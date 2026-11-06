@@ -19,6 +19,7 @@ import {
 function getHostname(project: ProjectItem): string {
   if (project.live) return project.live.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
   if (project.id === 'ai-summarizer') return '127.0.0.1:5500/ai-summarizer';
+  if (project.id === 'flashmind') return 'flashmind-ai.gemini.local';
   if (project.github) return project.github.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
   return 'system.engine';
 }

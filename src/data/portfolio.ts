@@ -107,6 +107,14 @@ export const portfolioData = {
       title: 'FlashMind-AI',
       subtitle: 'Multimodal RAG & Flashcard Generation Engine',
       year: '2025/',
+      image: '/projects/flashmind-welcome.webp',
+      images: [
+        { src: '/projects/flashmind-welcome.webp', caption: '01/05 // ONBOARDING & LEITNER SPACED REPETITION' },
+        { src: '/projects/flashmind-prompt.webp', caption: '02/05 // TOPIC PROMPT & PARAMETER CONFIGURATION' },
+        { src: '/projects/flashmind-upload.webp', caption: '03/05 // MULTIMODAL SYLLABUS INGESTION (PDF / DOCX)' },
+        { src: '/projects/flashmind-cards.webp', caption: '04/05 // ACTIVE RECALL DECK & 3D INTERACTIVE FLIP' },
+        { src: '/projects/flashmind-export.webp', caption: '05/05 // DETERMINISTIC STUDY DECK EXPORT (.TXT)' },
+      ],
       description:
         'Architected multimodal RAG engine parsing complex PDF/DOCX syllabi into interactive flashcard decks with Leitner spaced repetition. Utilizes Google Gemini 1.5 Flash with strict JSON schema enforcement, achieving 98% prompt output determinism and reducing revision deck compilation time from 45 minutes to sub-6 seconds.',
       metrics: ['98% Schema Consistency', 'sub-6s Compilation', 'Leitner Spaced Repetition', 'Gemini 1.5 Flash'],

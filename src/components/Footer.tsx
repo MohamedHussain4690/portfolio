@@ -13,15 +13,9 @@ export function Footer() {
       await navigator.clipboard.writeText(portfolioData.personal.email);
       setCopiedEmail(true);
       setTimeout(() => setCopiedEmail(false), 2000);
-    } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = portfolioData.personal.email;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopiedEmail(true);
-      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy email:', err);
+      alert('Could not copy email. Please select it manually.');
     }
   };
   return (
@@ -56,7 +50,7 @@ export function Footer() {
               {portfolioData.projects.map((proj) => (
                 <li key={proj.id}>
                   <a
-                    href={proj.github || '#work'}
+                    href={proj.github || '#projects'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-mono text-xs text-[var(--fg)] hover:text-[var(--accent)] transition-colors uppercase flex items-center gap-1"

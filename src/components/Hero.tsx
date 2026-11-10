@@ -87,7 +87,7 @@ export function Hero() {
 
             <div className="w-full h-full rounded-full overflow-hidden relative border border-white/10 flex items-center justify-center bg-[#111] z-10">
               <Image
-                src={portfolioData.personal.avatar || "/profile.png"}
+                src={portfolioData.personal.avatar || "/profile.png?v=3"}
                 alt="Mohamed Hussain N"
                 fill
                 sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 360px"

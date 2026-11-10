@@ -55,7 +55,7 @@ export const portfolioData = {
     email: 'mhhussain4690@gmail.com',
     github: 'https://github.com/MohamedHussain4690',
     linkedin: 'https://www.linkedin.com/in/mohamed-hussain-n-/',
-    avatar: '/profile.png',
+    avatar: '/profile.png?v=3',
   },
   nav: ['HOME/', 'ABOUT/', 'PROJECTS/', 'SKILLS/', 'JOURNEY/', 'CONTACT/'],
   projects: [

@@ -178,8 +178,8 @@ export const portfolioData = {
       period: '2023 — 2027',
       category: 'EDUCATION',
       title: 'B.E. Computer Science and Engineering',
-      organization: 'Affiliated Engineering College, Chennai',
-      description: 'Focused on core data structures, algorithms, distributed systems, and machine learning foundations.',
+      organization: 'Aalim Muhammed Salegh College of Engineering, Chennai',
+      description: 'CGPA: 8.60/10. Focused on core data structures, algorithms, distributed systems, and machine learning foundations.',
       badge: 'B.E. CSE',
     },
     {

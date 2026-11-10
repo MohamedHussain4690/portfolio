@@ -119,6 +119,16 @@ export function Footer() {
                   LINKEDIN PROFILE
                 </a>
               </li>
+              <li>
+                <a
+                  href="/Mohamed_Hussain_resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs text-[var(--fg)] hover:text-[var(--accent)] transition-colors uppercase flex items-center gap-1"
+                >
+                  RESUME / CV <ArrowUpRight className="w-3 h-3 opacity-50" />
+                </a>
+              </li>
             </ul>
           </div>
 
